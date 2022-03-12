@@ -11,7 +11,8 @@ public class StayBelowThing : MonoBehaviour
     void Update()
     {
         // lock the menu in place if we're looking at it, rotate freely otherwise
-        if (!(Vector3.Angle(_thingToStayBelow.forward, transform.localPosition) < _lockAngleDifference))
+        var thingToThisVec = transform.position - _thingToStayBelow.position;
+        if (!(Vector3.Angle(_thingToStayBelow.forward, thingToThisVec) < _lockAngleDifference))
         {
             transform.eulerAngles = new Vector3(0, _thingToStayBelow.eulerAngles.y, 0);
         }
