@@ -15,10 +15,18 @@ public class Toolbelt : MonoBehaviour
     public void SelectTool(GameObject toolToSelect)
     {
         DeselectAll();
-        toolToSelect.GetComponent<Tool>().Select();
+        MusicTool thisTool = toolToSelect.GetComponent<MusicTool>();
+        if (thisTool != null)
+        {
+            thisTool.Select();
+        }
+        else
+        {
+            toolToSelect.GetComponent<Tool>().Select();
+        }
     }
 
-    private void DeselectAll()
+    public void DeselectAll()
     {
         foreach (var o in toolOnBelt)
         {

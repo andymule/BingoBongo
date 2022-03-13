@@ -2060,7 +2060,7 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 8300000, guid: 8a9558e65b2b6af428fae614f8f2c562, type: 3}
-  m_PlayOnAwake: 1
+  m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
   Loop: 1
@@ -2810,6 +2810,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   highlight: {fileID: 1490352468}
+  timeToStayActiveAfterGaze: 5
 --- !u!1 &916399643
 GameObject:
   m_ObjectHideFlags: 0

@@ -19,9 +19,13 @@ public class ForwardRayManager : MonoBehaviour
 
         if (Physics.Raycast(_cameraTransform.position, _cameraTransform.forward, out hit, 10f, LayerMask.GetMask("Tool")))
         {
-            Debug.DrawLine(_cameraTransform.position, hit.point);
-            print("HIT " + hit.transform.name);
+            // Debug.DrawLine(_cameraTransform.position, hit.point);
+            // print("HIT " + hit.transform.name);
             _toolbelt.SelectTool(hit.transform.gameObject);
+        }
+        else
+        {
+            _toolbelt.DeselectAll();
         }
     }
 }

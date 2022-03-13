@@ -20,13 +20,18 @@ public class AndyMusicSystem : MonoBehaviour
     private float _spatialBlend = 0; // we can fade between the two modes with this . 1 is spatial, 0 is stereo
     private readonly float _blendTime = .55f; // how long the crossfade takes b/w spatial and stereo
 
-    private enum MusicMode
+    public enum MusicMode
     {
         Stereo,
         Spatial
     }
 
     [SerializeField] private MusicMode musicMode = MusicMode.Stereo;
+
+    private void Awake()
+    {
+        _masterSong = GetComponent<AudioSource>();
+    }
 
     public void ToggleMode()
     {
@@ -39,6 +44,22 @@ public class AndyMusicSystem : MonoBehaviour
         else
         {
             musicMode = MusicMode.Spatial;
+            StopAllCoroutines();
+            StartCoroutine(FadeSpatialBlendTo(1f, _blendTime));
+        }
+    }
+
+    public void SetMode(MusicMode mode)
+    {
+        if (mode == MusicMode.Spatial)
+        {
+            musicMode = MusicMode.Spatial;
+            StopAllCoroutines();
+            StartCoroutine(FadeSpatialBlendTo(0f, _blendTime));
+        }
+        else
+        {
+            musicMode = MusicMode.Stereo;
             StopAllCoroutines();
             StartCoroutine(FadeSpatialBlendTo(1f, _blendTime));
         }
@@ -60,14 +81,29 @@ public class AndyMusicSystem : MonoBehaviour
     {
         _allAudioEmitters.Add(newEmitter);
 
-        if (_allAudioEmitters.Count == 1)
-            ; // TODO do first animation thing?
+        // if (_allAudioEmitters.Count == 1)
+            // ; // TODO do first animation thing?
     }
 
     public void RemoveEmitterFromList(AndyMusicSpatialEmitter newEmitter)
     {
         _allAudioEmitters.Remove(newEmitter);
     }
+
+    public void Play()
+    {
+        _masterSong.Play();
+    }
+
+    public void Pause()
+    {
+        _masterSong.Pause();
+    }
+
+    // public void Stop()
+    // {
+    //     _masterSong.Stop();
+    // }
 
     private void OnAudioFilterRead(float[] data, int channels)
     {

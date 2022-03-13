@@ -38,8 +38,6 @@ public class MicrophoneHandling : MonoBehaviour
         {
             OnStart();
         }
-
-        _recognizing = !_recognizing;
     }
 
     private void Awake()
@@ -137,7 +135,7 @@ public class MicrophoneHandling : MonoBehaviour
     private void InitLanguageDropdown()
     {
         languageDropdown.options = modelProvider.speechModels
-            .Select(info => new Dropdown.OptionData {text = info.language.ToString()})
+            .Select(info => new Dropdown.OptionData { text = info.language.ToString() })
             .ToList();
 
         languageDropdown.value =
@@ -146,7 +144,7 @@ public class MicrophoneHandling : MonoBehaviour
         languageDropdown.onValueChanged.AddListener(index =>
         {
             var optionText = languageDropdown.options[index].text;
-            var selectedLanguage = (SystemLanguage) Enum.Parse(typeof(SystemLanguage), optionText);
+            var selectedLanguage = (SystemLanguage)Enum.Parse(typeof(SystemLanguage), optionText);
             OnLanguageChanged(selectedLanguage);
         });
     }
@@ -167,6 +165,9 @@ public class MicrophoneHandling : MonoBehaviour
 
     public void OnStart()
     {
+        if (_recognizing)
+            return;
+
         _recognizedText.Clear();
 
         text.text = RecognitionStartedMessage;
@@ -180,12 +181,18 @@ public class MicrophoneHandling : MonoBehaviour
         {
             text.text = e.Message;
         }
+
+        _recognizing = true;
     }
 
     public void OnStop()
     {
+        if (!_recognizing)
+            return;
+
         text.text = GreetingMessage;
         recognizer.StopRecognition();
+        _recognizing = false;
     }
 
     private void OnInitialized()
@@ -229,12 +236,37 @@ public class MicrophoneHandling : MonoBehaviour
         UpdateUiText();
     }
 
+    public bool ContainsPhrase(string phrase)
+    {
+        bool returnMe = true;
+
+        var toks = phrase.ToLower().Split();
+        var allText = _recognizedText.AllDumbText().ToLower().Split();
+        foreach (var token in toks)
+        {
+            if (!allText.Contains(token))
+                returnMe = false;
+        }
+
+        return returnMe;
+    }
+
+    public void ClearText()
+    {
+        _recognizedText.Clear();
+    }
+
     private class RecognizedText
     {
         private string _changingText;
         private string _stableText;
 
         public string CurrentText => $"{_stableText} <color=grey>{_changingText}</color>";
+
+        public string AllDumbText()
+        {
+            return $"{_changingText} {_stableText}";
+        }
 
         public void Add(Result result)
         {
@@ -278,7 +310,7 @@ public class MicrophoneHandling : MonoBehaviour
         public static void RequestAndroidPermissions()
         {
             var requestedPermissions = new List<string>
-                {Permission.Microphone, Permission.ExternalStorageWrite, Permission.ExternalStorageRead};
+                { Permission.Microphone, Permission.ExternalStorageWrite, Permission.ExternalStorageRead };
 
             List<string> FindMissingPermissions() =>
                 requestedPermissions.FindAll(permission => !Permission.HasUserAuthorizedPermission(permission));
