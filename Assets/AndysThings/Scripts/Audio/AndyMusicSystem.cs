@@ -94,6 +94,10 @@ public class AndyMusicSystem : MonoBehaviour
     public void RemoveEmitterFromList(AndyMusicSpatialEmitter newEmitter)
     {
         _allAudioEmitters.Remove(newEmitter);
+        
+        // if removed last spatial emitters, fade back to stereo
+        if (_allAudioEmitters.Count == 0)
+            SetMode(MusicMode.Stereo);
     }
 
     public void Play()

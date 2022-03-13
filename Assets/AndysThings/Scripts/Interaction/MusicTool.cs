@@ -13,7 +13,7 @@ public class MusicTool : Tool
     private AnchorCreator2 _anchorCreator2;
     [SerializeField] private GameObject confirmationFlashOverlay;
     private GameObject currentSelectedObject;
-    private bool isDeletable; // dont delete main music tool, but others can go as they please
+    [SerializeField] private bool isDeletable; // dont delete main music tool, but others can go as they please
 
     
     // we just got a command and need to reset the voice text buffer but it's still kind of trying to figure out whats up

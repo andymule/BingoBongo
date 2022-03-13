@@ -127,6 +127,7 @@ MonoBehaviour:
   highlight: {fileID: 1210746756}
   timeToStayActiveAfterGaze: 5
   confirmationFlashOverlay: {fileID: 0}
+  isDeletable: 1
   minTimeBetweenCommands: 1.35
 --- !u!1 &1210746756
 GameObject:
@@ -565,6 +566,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   audioMuted: 0
+  initialialized: 0
 --- !u!114 &33712518364284917
 MonoBehaviour:
   m_ObjectHideFlags: 0
