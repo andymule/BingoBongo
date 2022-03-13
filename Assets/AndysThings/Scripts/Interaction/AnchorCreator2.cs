@@ -38,7 +38,8 @@ public class AnchorCreator2 : MonoBehaviour
         print($"Removing all anchors ({m_Anchors.Count})");
         foreach (var anchor in m_Anchors)
         {
-            Destroy(anchor.gameObject);
+            if (anchor != null)
+                Destroy(anchor.gameObject);
         }
 
         m_Anchors.Clear();

@@ -35,6 +35,7 @@ public class AndyMusicSystem : MonoBehaviour
     private void Awake()
     {
         _masterSong = GetComponent<AudioSource>();
+        Screen.sleepTimeout = SleepTimeout.NeverSleep; // keep screen on for good music times!
     }
 
     public void ToggleMode()

@@ -6,7 +6,8 @@ public class ForwardRayManager : MonoBehaviour
 {
     private Toolbelt _toolbelt;
     private Transform _cameraTransform;
-
+    // [HideInInspector] public GameObject lastSpatialObject; // tracks last valid thing we looked at 
+    
     void Start()
     {
         _toolbelt = FindObjectOfType<Toolbelt>();

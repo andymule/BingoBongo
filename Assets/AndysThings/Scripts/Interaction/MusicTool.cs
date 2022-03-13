@@ -12,7 +12,10 @@ public class MusicTool : Tool
     private AndyMusicSystem _andyMusicSystem;
     private AnchorCreator2 _anchorCreator2;
     [SerializeField] private GameObject confirmationFlashOverlay;
+    private GameObject currentSelectedObject;
+    private bool isDeletable; // dont delete main music tool, but others can go as they please
 
+    
     // we just got a command and need to reset the voice text buffer but it's still kind of trying to figure out whats up
     // so it keeps returning things and can cause re-triggers
     // this float stops the retriggering by not allowing ANYTHING for a bit while clearing
@@ -54,19 +57,14 @@ public class MusicTool : Tool
 
     private void CheckVoiceCommands()
     {
-        if (_voiceInput.ContainsOneOfThesePhrases("Play Music", "Start Music", "Start"))
+        if (_voiceInput.ContainsOneOfThesePhrases("Play Music", "Start", "Latin"))
         {
             _andyMusicSystem.PlayLatin();
             ResetVoiceTextBuffer();
         }
-        else if (_voiceInput.ContainsOneOfThesePhrases("Jazz", "Play Jazz", "Do Jazz"))
+        else if (_voiceInput.ContainsOneOfThesePhrases("Jazz"))
         {
             _andyMusicSystem.PlayJazz();
-            ResetVoiceTextBuffer();
-        }
-        else if (_voiceInput.ContainsOneOfThesePhrases("Latin", "Play Latin", "Do Latin"))
-        {
-            _andyMusicSystem.PlayLatin();
             ResetVoiceTextBuffer();
         }
         else if (_voiceInput.ContainsOneOfThesePhrases("Play Love", "Do Love", "Play Lovesong", "Play Love Song"))
@@ -82,18 +80,24 @@ public class MusicTool : Tool
                 _andyMusicSystem.PlayLatin(); // nothing playing yet, so play default song
             ResetVoiceTextBuffer();
         }
-        else if (_voiceInput.ContainsOneOfThesePhrases("Stop Music", "Pause Music", "Pause", "Stop"))
+        else if (_voiceInput.ContainsOneOfThesePhrases("Pause", "Stop"))
         {
             _andyMusicSystem.Pause();
             ResetVoiceTextBuffer();
         }
-        else if (_voiceInput.ContainsOneOfThesePhrases("Make Emitter", "Make Speaker", "Create", "Make", "Spawn"))
+        else if (_voiceInput.ContainsOneOfThesePhrases("Create", "Make", "Spawn"))
         {
             isPlacingSpeaker = true;
             _anchorCreator2.EnterPlacementMode();
             ResetVoiceTextBuffer();
         }
-        else if (_voiceInput.ContainsOneOfThesePhrases("Place Speaker", "Set There", "Set Down", "Place", "Set"))
+        else if (_voiceInput.ContainsOneOfThesePhrases("Remove", "Delete"))
+        {
+            ResetVoiceTextBuffer();
+            if (isDeletable)
+                Destroy(this.gameObject);
+        }
+        else if (_voiceInput.ContainsOneOfThesePhrases("Set", "Place"))
         {
             isPlacingSpeaker = false;
             _anchorCreator2.PlaceThereNOW();
