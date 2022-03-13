@@ -14,14 +14,15 @@ public class IAndyMusicEmitter : MonoBehaviour
     private int _audioFrameSize;
     private float[] _audioDataToPlay;
     public bool audioMuted; // an emitter might remain in scene but not be audio active (muted). spawns in unmuted 
-
     private string _debugGameObjectName;
+    [HideInInspector] public bool initialialized; // audio thread can try to jump ahead while object is still creating, so we have to check if ready
     
     void Awake()
     {
         AudioSettings.GetDSPBufferSize(out _audioFrameSize, out int _);
         _audioDataToPlay = new float[_audioFrameSize * 2]; // we know our system is stereo, Unity thinks it's 4 channels some times
         _debugGameObjectName = name;
+        initialialized = true;
     }
 
     /// <summary>

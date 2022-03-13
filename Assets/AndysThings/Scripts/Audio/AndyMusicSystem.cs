@@ -9,13 +9,17 @@ using UnityEngine;
 [RequireComponent(typeof(AudioSource))]
 public class AndyMusicSystem : MonoBehaviour
 {
-    private AudioSource _masterSong; // the song that is "broadcast" to all emitters
+    public AudioSource _masterSong; // the song that is currently being "broadcast" to all emitters
+
+    [SerializeField] private AudioClip JazzSong;
+    [SerializeField] private AudioClip LatinSong;
+    [SerializeField] private AudioClip LoveSong;
 
     private List<AndyMusicSpatialEmitter>
         _allAudioEmitters = new List<AndyMusicSpatialEmitter>(); // emitters register themselves at spawntime into this list
 
     [SerializeField] private AndyMusicStereoEmitter stereoEmitter; // one of these is manually in scene always
-    public bool isPlaying = true;
+    [HideInInspector] public bool isPlaying = false;
 
     private float _spatialBlend = 0; // we can fade between the two modes with this . 1 is spatial, 0 is stereo
     private readonly float _blendTime = .55f; // how long the crossfade takes b/w spatial and stereo
@@ -94,17 +98,33 @@ public class AndyMusicSystem : MonoBehaviour
     public void Play()
     {
         _masterSong.Play();
+        isPlaying = true;
     }
 
     public void Pause()
     {
         _masterSong.Pause();
+        isPlaying = false;
     }
 
-    // public void Stop()
-    // {
-    //     _masterSong.Stop();
-    // }
+
+    public void PlayJazz()
+    {
+        _masterSong.clip = JazzSong;
+        Play();
+    }
+
+    public void PlayLatin()
+    {
+        _masterSong.clip = LatinSong;
+        Play();
+    }
+
+    public void PlayLove()
+    {
+        _masterSong.clip = LoveSong;
+        Play();
+    }
 
     private void OnAudioFilterRead(float[] data, int channels)
     {
@@ -124,7 +144,8 @@ public class AndyMusicSystem : MonoBehaviour
     {
         foreach (AndyMusicSpatialEmitter spatialEmitter in _allAudioEmitters)
         {
-            spatialEmitter.InjectAudioData(data, level);
+            if (spatialEmitter.initialialized)
+                spatialEmitter.InjectAudioData(data, level);
         }
     }
 }

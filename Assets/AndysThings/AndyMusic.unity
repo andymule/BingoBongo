@@ -2032,8 +2032,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ada8edc5f200a3d4f90a2de1e38547e1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _masterSong: {fileID: 0}
+  JazzSong: {fileID: 8300000, guid: ddbf439881822114196c5c0ca08d7344, type: 3}
+  LatinSong: {fileID: 8300000, guid: 8a9558e65b2b6af428fae614f8f2c562, type: 3}
+  LoveSong: {fileID: 8300000, guid: 9c974b71b315a1d43a6475977ec4536b, type: 3}
   stereoEmitter: {fileID: 280394661}
-  isPlaying: 1
+  isPlaying: 0
   musicMode: 0
 --- !u!4 &596894801
 Transform:
@@ -2059,7 +2063,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: 8a9558e65b2b6af428fae614f8f2c562, type: 3}
+  m_audioClip: {fileID: 0}
   m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
@@ -2812,6 +2816,7 @@ MonoBehaviour:
   highlight: {fileID: 1490352468}
   timeToStayActiveAfterGaze: 5
   confirmationFlashOverlay: {fileID: 2078876800}
+  minTimeBetweenCommands: 1.35
 --- !u!1 &916399643
 GameObject:
   m_ObjectHideFlags: 0
@@ -5171,6 +5176,7 @@ GameObject:
   - component: {fileID: 1530592729}
   - component: {fileID: 1530592731}
   - component: {fileID: 1530592730}
+  - component: {fileID: 1530592732}
   m_Layer: 5
   m_Name: Text (TMP) (1)
   m_TagString: Untagged
@@ -5217,7 +5223,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Bajo El Cielo
+  m_text: 
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: f68990f58689ac1448f24565bd7dd623, type: 2}
   m_sharedMaterial: {fileID: 21565973833442460, guid: f68990f58689ac1448f24565bd7dd623,
@@ -5295,6 +5301,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1530592728}
   m_CullTransparentMesh: 1
+--- !u!114 &1530592732
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1530592728}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bd09b6fb0ef848e42825c3cf346bf5ca, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1602168095
 GameObject:
   m_ObjectHideFlags: 0

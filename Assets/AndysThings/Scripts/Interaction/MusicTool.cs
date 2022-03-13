@@ -12,7 +12,7 @@ public class MusicTool : Tool
     private AndyMusicSystem _andyMusicSystem;
     private AnchorCreator2 _anchorCreator2;
     [SerializeField] private GameObject confirmationFlashOverlay;
-    
+
     // we just got a command and need to reset the voice text buffer but it's still kind of trying to figure out whats up
     // so it keeps returning things and can cause re-triggers
     // this float stops the retriggering by not allowing ANYTHING for a bit while clearing
@@ -39,7 +39,7 @@ public class MusicTool : Tool
         if (!isPlacingSpeaker) // timer pauses while placing speaker
             timeActiveRemaining -= Time.deltaTime;
         timeActiveRemaining = Mathf.Max(timeActiveRemaining, 0);
-        
+
         timeBetweenCommandsTimer -= Time.deltaTime;
         timeBetweenCommandsTimer = Mathf.Max(timeBetweenCommandsTimer, 0);
         if (timeBetweenCommandsTimer > 0)
@@ -54,9 +54,32 @@ public class MusicTool : Tool
 
     private void CheckVoiceCommands()
     {
-        if (_voiceInput.ContainsOneOfThesePhrases("Play Music", "Start Music", "Start", "Play"))
+        if (_voiceInput.ContainsOneOfThesePhrases("Play Music", "Start Music", "Start"))
         {
-            _andyMusicSystem.Play();
+            _andyMusicSystem.PlayLatin();
+            ResetVoiceTextBuffer();
+        }
+        else if (_voiceInput.ContainsOneOfThesePhrases("Jazz", "Play Jazz", "Do Jazz"))
+        {
+            _andyMusicSystem.PlayJazz();
+            ResetVoiceTextBuffer();
+        }
+        else if (_voiceInput.ContainsOneOfThesePhrases("Latin", "Play Latin", "Do Latin"))
+        {
+            _andyMusicSystem.PlayLatin();
+            ResetVoiceTextBuffer();
+        }
+        else if (_voiceInput.ContainsOneOfThesePhrases("Play Love", "Do Love", "Play Lovesong", "Play Love Song"))
+        {
+            _andyMusicSystem.PlayLove();
+            ResetVoiceTextBuffer();
+        }
+        else if (_voiceInput.ContainsOneOfThesePhrases("Play") && !_andyMusicSystem.isPlaying) //default music case, or pause resume
+        {
+            if (_andyMusicSystem._masterSong.clip != null)
+                _andyMusicSystem.Play(); // a song is already playing, so resume
+            else
+                _andyMusicSystem.PlayLatin(); // nothing playing yet, so play default song
             ResetVoiceTextBuffer();
         }
         else if (_voiceInput.ContainsOneOfThesePhrases("Stop Music", "Pause Music", "Pause", "Stop"))
@@ -88,7 +111,7 @@ public class MusicTool : Tool
         }
     }
 
-    private void ResetVoiceTextBuffer() 
+    private void ResetVoiceTextBuffer()
     {
         StopAllCoroutines();
         StartCoroutine(FlashNFade());
