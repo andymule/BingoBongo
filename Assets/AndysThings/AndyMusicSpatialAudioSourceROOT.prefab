@@ -50,7 +50,7 @@ MeshRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 584757609}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
@@ -128,6 +128,7 @@ MonoBehaviour:
   timeToStayActiveAfterGaze: 5
   confirmationFlashOverlay: {fileID: 0}
   isDeletable: 1
+  rootToDeleteIfDeletable: {fileID: 2396464580423382695}
   minTimeBetweenCommands: 1.35
 --- !u!1 &1210746756
 GameObject:
@@ -652,4 +653,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   oneSlice: {fileID: 2963825458498114469}
   window: 4
-  sensitivity: 1.5
+  sizeSensitivity: 1.5
+  colorSensitivity: 100

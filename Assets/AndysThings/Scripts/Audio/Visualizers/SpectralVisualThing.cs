@@ -16,7 +16,11 @@ public class SpectralVisualThing : MonoBehaviour
     private readonly int ignoreBottom = 4;
     private readonly int ignoreTop = 30;
     private readonly int ignoreEvery = 2;
-    [SerializeField] private float sensitivity = 1.5f;
+    [SerializeField] private float sizeSensitivity = 1.5f;
+    [SerializeField] private float colorSensitivity = 1.5f;
+
+    private readonly Color transYellow = new Color(1, 1, 0, .3f);
+    private readonly Color transGrey = new Color(.5f, .5f, .5f, .15f);
 
     void Start()
     {
@@ -50,10 +54,15 @@ public class SpectralVisualThing : MonoBehaviour
         _audioSource.GetSpectrumData(_spectrum, 0, window);
         for (int i = 0; i < _allSlices.Count; i++)
         {
+            var thisPoint = _spectrum[i * ignoreEvery + ignoreBottom];
+            
             _allSlices[i].transform.localScale = new Vector3(
-                x: _startSizeX + _spectrum[i * ignoreEvery + ignoreBottom] * sensitivity, 
+                x: _startSizeX + thisPoint * sizeSensitivity, 
                 y: _startSizeHeight,
-                z: _startSizeX + _spectrum[i * ignoreEvery + ignoreBottom] * sensitivity);
+                z: _startSizeX + thisPoint * sizeSensitivity);
+
+            // inefficient. noted.
+            _allSlices[i].GetComponent<Renderer>().material.color = Color.Lerp(transGrey, transYellow, thisPoint * colorSensitivity);
         }
     }
 }

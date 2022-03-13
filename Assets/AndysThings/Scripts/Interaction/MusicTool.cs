@@ -14,6 +14,7 @@ public class MusicTool : Tool
     [SerializeField] private GameObject confirmationFlashOverlay;
     private GameObject currentSelectedObject;
     [SerializeField] private bool isDeletable; // dont delete main music tool, but others can go as they please
+    [SerializeField] private GameObject rootToDeleteIfDeletable; 
 
     
     // we just got a command and need to reset the voice text buffer but it's still kind of trying to figure out whats up
@@ -85,19 +86,19 @@ public class MusicTool : Tool
             _andyMusicSystem.Pause();
             ResetVoiceTextBuffer();
         }
-        else if (_voiceInput.ContainsOneOfThesePhrases("Create", "Make", "Spawn"))
+        else if (_voiceInput.ContainsOneOfThesePhrases("Remove", "Delete"))
+        {
+            ResetVoiceTextBuffer();
+            if (isDeletable)
+                Destroy(rootToDeleteIfDeletable);
+        }
+        else if (_voiceInput.ContainsOneOfThesePhrases("Create", "Make", "Spawn") && !isPlacingSpeaker)
         {
             isPlacingSpeaker = true;
             _anchorCreator2.EnterPlacementMode();
             ResetVoiceTextBuffer();
         }
-        else if (_voiceInput.ContainsOneOfThesePhrases("Remove", "Delete"))
-        {
-            ResetVoiceTextBuffer();
-            if (isDeletable)
-                Destroy(this.gameObject);
-        }
-        else if (_voiceInput.ContainsOneOfThesePhrases("Set", "Place"))
+        else if (_voiceInput.ContainsOneOfThesePhrases("Set", "Place") && isPlacingSpeaker)
         {
             isPlacingSpeaker = false;
             _anchorCreator2.PlaceThereNOW();
