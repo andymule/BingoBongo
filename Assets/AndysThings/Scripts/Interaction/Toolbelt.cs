@@ -6,6 +6,7 @@ using UnityEngine;
 public class Toolbelt : MonoBehaviour
 {
     [SerializeField] private List<Tool> toolOnBelt;
+    private Tool currentSelectedTool;
 
     public void RegisterNewTool(Tool newTool)
     {
@@ -19,16 +20,21 @@ public class Toolbelt : MonoBehaviour
 
     public void SelectTool(GameObject toolToSelect)
     {
+        var thisTool = toolToSelect.GetComponent<Tool>();
+        if (thisTool == currentSelectedTool)
+            return;
         DeselectAll();
-        MusicTool thisTool = toolToSelect.GetComponent<MusicTool>();
-        if (thisTool != null)
+        MusicTool thisMusicTool = toolToSelect.GetComponent<MusicTool>();
+        if (thisMusicTool != null)
         {
-            thisTool.Select();
+            thisMusicTool.Select();
         }
         else
         {
-            toolToSelect.GetComponent<Tool>().Select();
+            thisTool.Select();
         }
+
+        currentSelectedTool = thisTool;
     }
 
     public void DeselectAll()
@@ -37,5 +43,7 @@ public class Toolbelt : MonoBehaviour
         {
             o.DeSelect();
         }
+
+        currentSelectedTool = null;
     }
 }

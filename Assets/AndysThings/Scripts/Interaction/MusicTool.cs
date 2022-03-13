@@ -34,6 +34,7 @@ public class MusicTool : Tool
 
     public new void Select()
     {
+        ResetVoiceBuffer(); // it gets so laggy if it runs for a bit. there are a lot of these dumb workarounds in here
         highlight.SetActive(true);
         timeActiveRemaining = timeToStayActiveAfterGaze;
     }
@@ -61,17 +62,17 @@ public class MusicTool : Tool
         if (_voiceInput.ContainsOneOfThesePhrases("Play Music", "Start", "Latin"))
         {
             _andyMusicSystem.PlayLatin();
-            ResetVoiceTextBuffer();
+            GotValidCommand();
         }
         else if (_voiceInput.ContainsOneOfThesePhrases("Jazz"))
         {
             _andyMusicSystem.PlayJazz();
-            ResetVoiceTextBuffer();
+            GotValidCommand();
         }
         else if (_voiceInput.ContainsOneOfThesePhrases("Play Love", "Do Love", "Play Lovesong", "Play Love Song"))
         {
             _andyMusicSystem.PlayLove();
-            ResetVoiceTextBuffer();
+            GotValidCommand();
         }
         else if (_voiceInput.ContainsOneOfThesePhrases("Play") && !_andyMusicSystem.isPlaying) //default music case, or pause resume
         {
@@ -79,16 +80,16 @@ public class MusicTool : Tool
                 _andyMusicSystem.Play(); // a song is already playing, so resume
             else
                 _andyMusicSystem.PlayLatin(); // nothing playing yet, so play default song
-            ResetVoiceTextBuffer();
+            GotValidCommand();
         }
         else if (_voiceInput.ContainsOneOfThesePhrases("Pause", "Stop"))
         {
             _andyMusicSystem.Pause();
-            ResetVoiceTextBuffer();
+            GotValidCommand();
         }
         else if (_voiceInput.ContainsOneOfThesePhrases("Remove", "Delete"))
         {
-            ResetVoiceTextBuffer();
+            GotValidCommand();
             if (isDeletable)
                 Destroy(rootToDeleteIfDeletable);
         }
@@ -96,34 +97,39 @@ public class MusicTool : Tool
         {
             isPlacingSpeaker = true;
             _anchorCreator2.EnterPlacementMode();
-            ResetVoiceTextBuffer();
+            GotValidCommand();
         }
         else if (_voiceInput.ContainsOneOfThesePhrases("Set", "Place") && isPlacingSpeaker)
         {
             isPlacingSpeaker = false;
             _anchorCreator2.PlaceThereNOW();
-            ResetVoiceTextBuffer();
+            GotValidCommand();
         }
         else if (_voiceInput.ContainsOneOfThesePhrases("Stereo", "Headset", "Headphones", "Airpods", "Earbuds", "Airpod", "Earbud", "Headphone"))
         {
             _andyMusicSystem.SetMode(AndyMusicSystem.MusicMode.Stereo);
-            ResetVoiceTextBuffer();
+            GotValidCommand();
         }
         else if (_voiceInput.ContainsOneOfThesePhrases("Spatial", "World", "Outside"))
         {
             _andyMusicSystem.SetMode(AndyMusicSystem.MusicMode.Spatial);
-            ResetVoiceTextBuffer();
+            GotValidCommand();
         }
     }
 
-    private void ResetVoiceTextBuffer()
+    private void GotValidCommand()
     {
         StopAllCoroutines();
         StartCoroutine(FlashNFade());
+        timeBetweenCommandsTimer = minTimeBetweenCommands;
+        ResetVoiceBuffer();
+    }
+
+    private void ResetVoiceBuffer()
+    {
         _voiceInput.OnStop();
         _voiceInput.ClearText();
         _voiceInput.OnStart();
-        timeBetweenCommandsTimer = minTimeBetweenCommands;
     }
 
     private IEnumerator FlashNFade()
