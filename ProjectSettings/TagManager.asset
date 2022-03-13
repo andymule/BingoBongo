@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Highlight
   - ToolOnBelt
+  - ConfirmationOverlay
   layers:
   - Default
   - TransparentFX

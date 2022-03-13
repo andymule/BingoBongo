@@ -10,80 +10,98 @@ public class MusicTool : Tool
     private MicrophoneHandling _voiceInput;
     private bool isPlacingSpeaker = false;
     private AndyMusicSystem _andyMusicSystem;
+    private AnchorCreator2 _anchorCreator2;
+    [SerializeField] private GameObject confirmationFlashOverlay;
+    
+    // we just got a command and need to reset the voice text buffer but it's still kind of trying to figure out whats up
+    // so it keeps returning things and can cause re-triggers
+    // this float stops the retriggering by not allowing ANYTHING for a bit while clearing
+    [SerializeField] private float minTimeBetweenCommands = 1.35f;
+    private float timeBetweenCommandsTimer; // actually does the countdown for above
 
     private void Start()
     {
         _voiceInput = FindObjectOfType<MicrophoneHandling>();
         _andyMusicSystem = FindObjectOfType<AndyMusicSystem>();
+        _anchorCreator2 = FindObjectOfType<AnchorCreator2>();
+        if (confirmationFlashOverlay == null)
+            confirmationFlashOverlay = GameObject.FindWithTag("ConfirmationOverlay");
     }
 
     public new void Select()
     {
         highlight.SetActive(true);
         timeActiveRemaining = timeToStayActiveAfterGaze;
-        _voiceInput.OnStart();
     }
 
     private void Update()
     {
-        if (!isPlacingSpeaker) // pause timer while placing speaker
+        if (!isPlacingSpeaker) // timer pauses while placing speaker
             timeActiveRemaining -= Time.deltaTime;
-
         timeActiveRemaining = Mathf.Max(timeActiveRemaining, 0);
-        if (timeActiveRemaining <= 0)
+        
+        timeBetweenCommandsTimer -= Time.deltaTime;
+        timeBetweenCommandsTimer = Mathf.Max(timeBetweenCommandsTimer, 0);
+        if (timeBetweenCommandsTimer > 0)
         {
-            _voiceInput.OnStop(); // TODO hide and show visual state too
+            _voiceInput.ClearText(); // stupid, but we keep spamming calls clear this whole time  
         }
-        else // voice is active
+        else if (timeActiveRemaining > 0)
         {
-            if (_voiceInput.ContainsPhrase("Play Music") || _voiceInput.ContainsPhrase("Start Music"))
-            {
-                _andyMusicSystem.Play();
-                print("PLAY MUSIC");
-                ResetVoice();
-            }
-
-            if (_voiceInput.ContainsPhrase("Stop Music") || _voiceInput.ContainsPhrase("Pause Music"))
-            {
-                _andyMusicSystem.Pause();
-                print("STOP MUSIC");
-                ResetVoice();
-            }
-
-            if (_voiceInput.ContainsPhrase("Make Emitter") || _voiceInput.ContainsPhrase("Make Speaker"))
-            {
-                isPlacingSpeaker = true;
-                print("MAKING SPEAKER");
-                ResetVoice();
-            }
-
-            if (_voiceInput.ContainsPhrase("Place Speaker") || _voiceInput.ContainsPhrase("Set There"))
-            {
-                isPlacingSpeaker = false;
-                print("PLACE SPEAKER");
-                ResetVoice();
-            }
-
-            if (_voiceInput.ContainsPhrase("Play Stereo"))
-            {
-                _andyMusicSystem.SetMode(AndyMusicSystem.MusicMode.Stereo);
-                print("PLAY STEREO");
-                ResetVoice();
-            }
-
-            if (_voiceInput.ContainsPhrase("Play Spatial"))
-            {
-                _andyMusicSystem.SetMode(AndyMusicSystem.MusicMode.Spatial);
-                print("PLAY SPATIAL");
-                ResetVoice();
-            }
+            CheckVoiceCommands();
         }
     }
 
-    private void ResetVoice()
+    private void CheckVoiceCommands()
     {
+        if (_voiceInput.ContainsOneOfThesePhrases("Play Music", "Start Music", "Start", "Play"))
+        {
+            _andyMusicSystem.Play();
+            ResetVoiceTextBuffer();
+        }
+        else if (_voiceInput.ContainsOneOfThesePhrases("Stop Music", "Pause Music", "Pause", "Stop"))
+        {
+            _andyMusicSystem.Pause();
+            ResetVoiceTextBuffer();
+        }
+        else if (_voiceInput.ContainsOneOfThesePhrases("Make Emitter", "Make Speaker", "Create", "Make", "Spawn"))
+        {
+            isPlacingSpeaker = true;
+            _anchorCreator2.EnterPlacementMode();
+            ResetVoiceTextBuffer();
+        }
+        else if (_voiceInput.ContainsOneOfThesePhrases("Place Speaker", "Set There", "Set Down", "Place", "Set"))
+        {
+            isPlacingSpeaker = false;
+            _anchorCreator2.PlaceThereNOW();
+            ResetVoiceTextBuffer();
+        }
+        else if (_voiceInput.ContainsOneOfThesePhrases("Stereo", "Headset", "Headphones", "Airpods", "Earbuds", "Airpod", "Earbud", "Headphone"))
+        {
+            _andyMusicSystem.SetMode(AndyMusicSystem.MusicMode.Stereo);
+            ResetVoiceTextBuffer();
+        }
+        else if (_voiceInput.ContainsOneOfThesePhrases("Spatial", "World", "Outside"))
+        {
+            _andyMusicSystem.SetMode(AndyMusicSystem.MusicMode.Spatial);
+            ResetVoiceTextBuffer();
+        }
+    }
+
+    private void ResetVoiceTextBuffer() 
+    {
+        StopAllCoroutines();
+        StartCoroutine(FlashNFade());
         _voiceInput.OnStop();
         _voiceInput.ClearText();
         _voiceInput.OnStart();
+        timeBetweenCommandsTimer = minTimeBetweenCommands;
+    }
+
+    private IEnumerator FlashNFade()
+    {
+        confirmationFlashOverlay.SetActive(true);
+        yield return new WaitForSeconds(.3f);
+        confirmationFlashOverlay.SetActive(false);
     }
 }

@@ -7,9 +7,14 @@ public class Toolbelt : MonoBehaviour
 {
     [SerializeField] private List<Tool> toolOnBelt;
 
-    void Start()
+    public void RegisterNewTool(Tool newTool)
     {
-        DeselectAll();
+        toolOnBelt.Add(newTool);
+    }
+
+    public void RemoveOldTool(Tool oldTool)
+    {
+        toolOnBelt.Remove(oldTool);
     }
 
     public void SelectTool(GameObject toolToSelect)

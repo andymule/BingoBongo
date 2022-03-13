@@ -16,6 +16,7 @@ public class SpectralVisualThing : MonoBehaviour
     private readonly int ignoreBottom = 4;
     private readonly int ignoreTop = 30;
     private readonly int ignoreEvery = 2;
+    [SerializeField] private float sensitivity = 1.5f;
 
     void Start()
     {
@@ -32,7 +33,7 @@ public class SpectralVisualThing : MonoBehaviour
             _audioSource = transform.parent.GetComponent<AudioSource>();
         }
 
-        for (int i = 0; i < slicesToTake - ignoreBottom - ignoreTop; i+= ignoreEvery)
+        for (int i = 0; i < slicesToTake - ignoreBottom - ignoreTop; i += ignoreEvery)
         {
             GameObject thisSlice = Instantiate(oneSlice, transform);
             thisSlice.transform.position = oneSlice.transform.position + new Vector3(0, gapSize, 0) * i;
@@ -49,8 +50,10 @@ public class SpectralVisualThing : MonoBehaviour
         _audioSource.GetSpectrumData(_spectrum, 0, window);
         for (int i = 0; i < _allSlices.Count; i++)
         {
-            _allSlices[i].transform.localScale = new Vector3(_startSizeX + _spectrum[i*ignoreEvery + ignoreBottom], _startSizeHeight,
-                _startSizeX + _spectrum[i*ignoreEvery + ignoreBottom]);
+            _allSlices[i].transform.localScale = new Vector3(
+                x: _startSizeX + _spectrum[i * ignoreEvery + ignoreBottom] * sensitivity, 
+                y: _startSizeHeight,
+                z: _startSizeX + _spectrum[i * ignoreEvery + ignoreBottom] * sensitivity);
         }
     }
 }

@@ -28,17 +28,17 @@ public class MicrophoneHandling : MonoBehaviour
 
     public SystemLanguage defaultLanguage = SystemLanguage.English;
 
-    public void Toggle()
-    {
-        if (_recognizing)
-        {
-            OnStop();
-        }
-        else
-        {
-            OnStart();
-        }
-    }
+    // public void Toggle()
+    // {
+    //     if (_recognizing)
+    //     {
+    //         OnStop();
+    //     }
+    //     else
+    //     {
+    //         OnStart();
+    //     }
+    // }
 
     private void Awake()
     {
@@ -63,7 +63,8 @@ public class MicrophoneHandling : MonoBehaviour
             InitLanguageDropdown();
             InitRecognizer();
             OnInitialized();
-            OnStop(); // stop after we're ready
+            // OnStop(); // stop after we're ready
+            OnStart(); // start doin stuff when ready
         }
         catch (Exception e)
         {
@@ -71,30 +72,30 @@ public class MicrophoneHandling : MonoBehaviour
         }
     }
 
-    private void Update()
-    {
-        if (!_ready)
-        {
-            return;
-        }
-
-        var spaceReleased = Input.GetKeyUp(KeyCode.Space);
-        var touchEnded = Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Ended;
-
-        if (!spaceReleased && !touchEnded)
-        {
-            return;
-        }
-
-        if (recognizer.IsRecognizing)
-        {
-            OnStop();
-        }
-        else
-        {
-            OnStart();
-        }
-    }
+    // private void Update()
+    // {
+        // if (!_ready)
+        // {
+        //     return;
+        // }
+        //
+        // var spaceReleased = Input.GetKeyUp(KeyCode.Space);
+        // var touchEnded = Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Ended;
+        //
+        // if (!spaceReleased && !touchEnded)
+        // {
+        //     return;
+        // }
+        //
+        // if (recognizer.IsRecognizing)
+        // {
+        //     OnStop();
+        // }
+        // else
+        // {
+        //     OnStart();
+        // }
+    // }
 
     private static async Task InitPlatformPermissions()
     {
@@ -236,7 +237,18 @@ public class MicrophoneHandling : MonoBehaviour
         UpdateUiText();
     }
 
-    public bool ContainsPhrase(string phrase)
+    public bool ContainsOneOfThesePhrases(params string[] phrases)
+    {
+        foreach (string phrase in phrases)
+        {
+            if (ContainsPhrase(phrase))
+                return true;
+        }
+
+        return false;
+    }
+
+    private bool ContainsPhrase(string phrase)
     {
         bool returnMe = true;
 

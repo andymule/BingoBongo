@@ -55,13 +55,13 @@ public class AndyMusicSystem : MonoBehaviour
         {
             musicMode = MusicMode.Spatial;
             StopAllCoroutines();
-            StartCoroutine(FadeSpatialBlendTo(0f, _blendTime));
+            StartCoroutine(FadeSpatialBlendTo(1f, _blendTime));
         }
         else
         {
             musicMode = MusicMode.Stereo;
             StopAllCoroutines();
-            StartCoroutine(FadeSpatialBlendTo(1f, _blendTime));
+            StartCoroutine(FadeSpatialBlendTo(0f, _blendTime));
         }
     }
 
@@ -81,8 +81,9 @@ public class AndyMusicSystem : MonoBehaviour
     {
         _allAudioEmitters.Add(newEmitter);
 
-        // if (_allAudioEmitters.Count == 1)
-            // ; // TODO do first animation thing?
+        // first speaker automatically plays out in the world
+        if (_allAudioEmitters.Count == 1)
+            SetMode(MusicMode.Spatial);
     }
 
     public void RemoveEmitterFromList(AndyMusicSpatialEmitter newEmitter)

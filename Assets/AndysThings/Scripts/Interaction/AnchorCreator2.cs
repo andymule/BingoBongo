@@ -11,11 +11,26 @@ public class AnchorCreator2 : MonoBehaviour
 {
     [SerializeField] GameObject m_Prefab;
     [SerializeField] GameObject hitpointPreview;
+    private Transform _cameraTransform;
 
     public GameObject prefab
     {
         get => m_Prefab;
         set => m_Prefab = value;
+    }
+
+    private bool placementMode = false;
+    private bool placeNOW = false;
+
+    public void EnterPlacementMode()
+    {
+        placementMode = true;
+        placeNOW = false;
+    }
+
+    public void PlaceThereNOW()
+    {
+        placeNOW = true;
     }
 
     public void RemoveAllAnchors()
@@ -33,6 +48,7 @@ public class AnchorCreator2 : MonoBehaviour
     {
         m_RaycastManager = GetComponent<ARRaycastManager>();
         m_AnchorManager = GetComponent<ARAnchorManager>();
+        _cameraTransform = Camera.main.transform;
     }
 
     void SetAnchorText(ARAnchor anchor, string text)
@@ -84,13 +100,13 @@ public class AnchorCreator2 : MonoBehaviour
 
     void Update()
     {
-        // if (Input.touchCount == 0)
-            // return;
+        hitpointPreview.SetActive(false);
+        if (!placementMode)
+            return;
 
-            Touch touch = new Touch();
-            
-        // if (touch.phase != TouchPhase.Began)
-            // return;
+        hitpointPreview.SetActive(true);
+
+        Touch touch = new Touch();
 
         // Raycast against planes and feature points
         const TrackableType trackableTypes =
@@ -101,30 +117,27 @@ public class AnchorCreator2 : MonoBehaviour
         // Perform the raycast
         if (m_RaycastManager.Raycast(touch.position, s_Hits, trackableTypes))
         {
-            
             // Raycast hits are sorted by distance, so the first one will be the closest hit.
-            hitpointPreview.SetActive(true);
             var hit = s_Hits[0];
-            
-            
-            
             hitpointPreview.transform.position = Vector3.Lerp(hitpointPreview.transform.position, hit.pose.position, .05f);
 
-            // Create a new anchor
-            // var anchor = CreateAnchor(hit);
-            // if (anchor)
-            // {
-            // Remember the anchor so we can remove it later.
-            // m_Anchors.Add(anchor);
-            // }
-            // else
-            // {
-            // print("Error creating anchor");
-            // }
+            if (placeNOW)
+            {
+                // Create a new anchor
+                var anchor = CreateAnchor(hit);
+                if (anchor)
+                {
+                    m_Anchors.Add(anchor);
+                }
+
+                placeNOW = false;
+                placementMode = false;
+            }
         }
         else
         {
-            hitpointPreview.SetActive(false);
+            var inFrontOfCamera = _cameraTransform.position + _cameraTransform.forward * .5f;
+            hitpointPreview.transform.position = Vector3.Lerp(hitpointPreview.transform.position, inFrontOfCamera, .05f);
         }
     }
 
