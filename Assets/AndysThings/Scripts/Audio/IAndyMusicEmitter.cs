@@ -11,23 +11,21 @@ using UnityEngine;
 [RequireComponent(typeof(AudioSource))]
 public class IAndyMusicEmitter : MonoBehaviour
 {
-    private int _audioFrameSize;
     private float[] _audioDataToPlay;
     public bool audioMuted; // an emitter might remain in scene but not be audio active (muted). spawns in unmuted 
-    private string _debugGameObjectName;
     [HideInInspector] public bool initialialized; // audio thread can try to jump ahead while object is still creating, so we have to check if ready
-    
+
     void Awake()
     {
+        int _audioFrameSize;
         AudioSettings.GetDSPBufferSize(out _audioFrameSize, out int _);
-        _audioDataToPlay = new float[_audioFrameSize * 2]; // we know our system is stereo, Unity thinks it's 4 channels some times
-        _debugGameObjectName = name;
+        _audioDataToPlay = new float[_audioFrameSize * 2]; // we know our system is stereo, but Unity thinks it's 4 channels sometimes
         initialialized = true;
     }
 
     /// <summary>
-    /// Copies data from MusicSystem into specific emitters. Will incur 1 frame of audio latency for buffer transfer.
-    /// can control volume from level scalar
+    /// MusicSystem injects audio data into each emitter. Might incur 1 frame of audio latency for buffer transfer.
+    /// Can control volume from level scalar for cross-fading
     /// </summary>
     /// <param name="data"></param>
     /// <param name="level"></param>
@@ -63,17 +61,10 @@ public class IAndyMusicEmitter : MonoBehaviour
             return;
         }
 
-        // float runningTotal = 0;
-        // foreach (float f in _audioDataToPlay)
-        // {
-        //     runningTotal += f;
-        // }
-        // if (runningTotal == 0)
-        //     Debug.LogWarning(_debugGameObjectName + ": empty audio");
-        
-
         if (data.Length != _audioDataToPlay.Length)
             throw new InvalidDataException("OnAudioFilterRead: Audio buffer size mismatch");
+        
+        // if we make it here, we're going to move the audio data from music system into audio source so it can be spatialized
         Array.Copy(_audioDataToPlay, data, data.Length);
         Array.Clear(_audioDataToPlay, 0, _audioDataToPlay.Length); // eat our own data after we play it
     }

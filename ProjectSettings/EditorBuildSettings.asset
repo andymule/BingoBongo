@@ -5,6 +5,12 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
+  - enabled: 0
+    path: Assets/Sergey Okhotnikov/Native Speech Recognition/Scenes/ExampleScene.unity
+    guid: 2cda990e2423bbf4892e6590ba056729
+  - enabled: 0
+    path: Assets/Recognissimo/Demos/MicrophoneExample.unity
+    guid: d2859c2e3af4ac145ad13193657241f6
   - enabled: 1
     path: Assets/AndysThings/AndyMusic.unity
     guid: cc54df3255e81844ab01598bb4bfa09c

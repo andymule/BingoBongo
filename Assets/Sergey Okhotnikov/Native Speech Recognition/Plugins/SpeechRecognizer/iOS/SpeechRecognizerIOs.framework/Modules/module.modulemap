@@ -1,0 +1,11 @@
+framework module SpeechRecognizerIOs {
+  umbrella header "SpeechRecognizerIOs.h"
+
+  export *
+  module * { export * }
+}
+
+module SpeechRecognizerIOs.Swift {
+    header "SpeechRecognizerIOs-Swift.h"
+    requires objc
+}

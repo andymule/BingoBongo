@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// Takes a master audiosource and manages how it should be played back, including spatial vs stereo
+/// Takes a master song and manages how it should be played back on speakers, including spatial vs stereo control
 /// </summary>
 [RequireComponent(typeof(AudioSource))]
 public class AndyMusicSystem : MonoBehaviour
@@ -15,8 +15,8 @@ public class AndyMusicSystem : MonoBehaviour
     [SerializeField] private AudioClip LatinSong;
     [SerializeField] private AudioClip LoveSong;
 
-    private List<AndyMusicSpatialEmitter>
-        _allAudioEmitters = new List<AndyMusicSpatialEmitter>(); // emitters register themselves at spawntime into this list
+    // emitters register themselves at spawn-time into this list
+    private List<AndyMusicSpatialEmitter> _allAudioEmitters = new List<AndyMusicSpatialEmitter>();
 
     [SerializeField] private AndyMusicStereoEmitter stereoEmitter; // one of these is manually in scene always
     [HideInInspector] public bool isPlaying = false;
@@ -86,7 +86,7 @@ public class AndyMusicSystem : MonoBehaviour
     {
         _allAudioEmitters.Add(newEmitter);
 
-        // first speaker automatically plays out in the world
+        // first speaker automatically plays out in the world with crossfade to spatial
         if (_allAudioEmitters.Count == 1)
             SetMode(MusicMode.Spatial);
     }
@@ -94,7 +94,7 @@ public class AndyMusicSystem : MonoBehaviour
     public void RemoveEmitterFromList(AndyMusicSpatialEmitter newEmitter)
     {
         _allAudioEmitters.Remove(newEmitter);
-        
+
         // if removed last spatial emitters, fade back to stereo
         if (_allAudioEmitters.Count == 0)
             SetMode(MusicMode.Stereo);
@@ -135,7 +135,7 @@ public class AndyMusicSystem : MonoBehaviour
     {
         if (!isPlaying)
         {
-            Array.Clear(data, 0, data.Length); // the music system manager doesn't play anything itself
+            Array.Clear(data, 0, data.Length);
             return;
         }
 

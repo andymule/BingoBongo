@@ -13,7 +13,7 @@ public class AndyMusicSpatialEmitter : IAndyMusicEmitter
 
     void Start()
     {
-        _musicSystem = GameObject.FindObjectOfType<AndyMusicSystem>();
+        _musicSystem = FindObjectOfType<AndyMusicSystem>();
         _musicSystem.RegisterNewEmitterToList(this);
     }
 

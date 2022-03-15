@@ -2,12 +2,15 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+
+/// <summary>
+/// Shoots a ray out the middle of the camera and tries to hit tools
+/// </summary>
 public class ForwardRayManager : MonoBehaviour
 {
     private Toolbelt _toolbelt;
     private Transform _cameraTransform;
-    // [HideInInspector] public GameObject lastSpatialObject; // tracks last valid thing we looked at 
-    
+
     void Start()
     {
         _toolbelt = FindObjectOfType<Toolbelt>();
@@ -18,15 +21,9 @@ public class ForwardRayManager : MonoBehaviour
     {
         RaycastHit hit;
 
-        if (Physics.Raycast(_cameraTransform.position, _cameraTransform.forward, out hit, 10f, LayerMask.GetMask("Tool")))
+        if (Physics.Raycast(_cameraTransform.position, _cameraTransform.forward, out hit, 20f, LayerMask.GetMask("Tool")))
         {
-            // Debug.DrawLine(_cameraTransform.position, hit.point);
-            // print("HIT " + hit.transform.name);
             _toolbelt.SelectTool(hit.transform.gameObject);
-        }
-        else
-        {
-            _toolbelt.DeselectAll();
         }
     }
 }

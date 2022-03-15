@@ -5,6 +5,9 @@ using UnityEngine.XR.ARFoundation;
 using UnityEngine.XR.ARFoundation.Samples;
 using UnityEngine.XR.ARSubsystems;
 
+/// <summary>
+/// This class is a lightly modified version of the one shipped with AR Foundations to behave the way I want
+/// </summary>
 [RequireComponent(typeof(ARAnchorManager))]
 [RequireComponent(typeof(ARRaycastManager))]
 public class AnchorCreator2 : MonoBehaviour
@@ -20,17 +23,17 @@ public class AnchorCreator2 : MonoBehaviour
     }
 
     private bool placementMode = false;
-    private bool placeNOW = false;
+    private bool placeOnHit = false;
 
     public void EnterPlacementMode()
     {
         placementMode = true;
-        placeNOW = false;
+        placeOnHit = false;
     }
 
-    public void PlaceThereNOW()
+    public void PlaceThereWhenNextHit()
     {
-        placeNOW = true;
+        placeOnHit = true;
     }
 
     public void RemoveAllAnchors()
@@ -122,7 +125,7 @@ public class AnchorCreator2 : MonoBehaviour
             var hit = s_Hits[0];
             hitpointPreview.transform.position = Vector3.Lerp(hitpointPreview.transform.position, hit.pose.position, .05f);
 
-            if (placeNOW)
+            if (placeOnHit)
             {
                 // Create a new anchor
                 var anchor = CreateAnchor(hit);
@@ -131,7 +134,7 @@ public class AnchorCreator2 : MonoBehaviour
                     m_Anchors.Add(anchor);
                 }
 
-                placeNOW = false;
+                placeOnHit = false;
                 placementMode = false;
             }
         }

@@ -8,9 +8,12 @@ using UnityEngine;
 using UnityEngine.Android;
 using UnityEngine.UI;
 
+/// <summary>
+/// This class is a lightly modified version of the example that ships with Recognissimo to suit my voice control needs
+/// </summary>
 public class MicrophoneHandling : MonoBehaviour
 {
-    private const string InitializationMessage = "Loadin...";
+    private const string InitializationMessage = "Loading...";
     private const string GreetingMessage = "ready but stopped";
     private const string RecognitionStartedMessage = "Recognizing...";
     private const string RecognizerCrashedMessage = "Recognizer crashed";

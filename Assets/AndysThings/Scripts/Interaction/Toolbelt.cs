@@ -1,12 +1,19 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.InteropServices.WindowsRuntime;
 using TMPro;
 using UnityEngine;
 
+/// <summary>
+/// Tracks all tools in scene. Holds such useful tools.
+/// Tools register themselves when spawned in.
+/// ForwardRayManager triggers the SelectTool function on valid gaze.
+/// SelectTool notifies each Tool of their selection state. 
+/// </summary>
 public class Toolbelt : MonoBehaviour
 {
     [SerializeField] private List<Tool> toolOnBelt;
-    private Tool currentSelectedTool;
 
     public void RegisterNewTool(Tool newTool)
     {
@@ -21,29 +28,11 @@ public class Toolbelt : MonoBehaviour
     public void SelectTool(GameObject toolToSelect)
     {
         var thisTool = toolToSelect.GetComponent<Tool>();
-        if (thisTool == currentSelectedTool)
-            return;
-        DeselectAll();
-        MusicTool thisMusicTool = toolToSelect.GetComponent<MusicTool>();
-        if (thisMusicTool != null)
-        {
-            thisMusicTool.Select();
-        }
-        else
-        {
-            thisTool.Select();
-        }
+        thisTool.Select();
 
-        currentSelectedTool = thisTool;
-    }
-
-    public void DeselectAll()
-    {
-        foreach (var o in toolOnBelt)
+        foreach (var tool in toolOnBelt.Where(tool => tool != thisTool))
         {
-            o.DeSelect();
+            tool.DeSelect();
         }
-
-        currentSelectedTool = null;
     }
 }
