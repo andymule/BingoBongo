@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.InteropServices.WindowsRuntime;
 using UnityEngine;
+using UnityEngine.UI;
 
 /// <summary>
 /// Inherits from Tool -- this tool manages music playback control from voice+gaze
@@ -16,7 +17,7 @@ public class MusicTool : Tool
     [SerializeField] private bool isDeletable; // dont delete main tool instances, but smaller clones can die as they please
     [SerializeField] private GameObject rootToDeleteIfDeletable; // in case we want to delete a parent when deleting self
     private bool _isPlacingSpeaker; // flags the system to not timeout voice awareness while placing
-
+    private Image _musicToolActiveAndListening; // icon is active while music tool is listening for commands
 
     // if we just got a command and need to reset the voice text buffer, it can take a sec to settle on the words
     // so it might keep returning valid word combos and can cause re-triggers
@@ -29,24 +30,30 @@ public class MusicTool : Tool
         _voiceInput = FindObjectOfType<MicrophoneHandling>();
         _andyMusicSystem = FindObjectOfType<AndyMusicSystem>();
         _anchorCreator2 = FindObjectOfType<AnchorCreator2>();
+        _musicToolActiveAndListening = GameObject.FindGameObjectWithTag("MusicIcon").GetComponent<Image>();
         if (confirmationFlashOverlay == null)
             confirmationFlashOverlay = GameObject.FindWithTag("ConfirmationOverlay");
     }
 
     public override void Select()
     {
-        _timeActiveRemaining = timeToStayActiveAfterGaze;
+        _timeActiveRemaining = TimeToStayActiveAfterGaze;
         if (_isSelected)
         {
             return;
         }
 
+        _isSelected = true;
         ResetVoiceBuffer(); // tries to avoid old words triggering on this new tool gaze interaction
         highlight.SetActive(true);
+        _musicToolActiveAndListening.enabled = true;
     }
 
     protected override void Update()
     {
+        if (!_isSelected)
+            return;
+
         if (!_isPlacingSpeaker) // timer pauses while placing speaker
             _timeActiveRemaining -= Time.deltaTime;
         _timeActiveRemaining = Mathf.Max(_timeActiveRemaining, 0);
@@ -77,17 +84,18 @@ public class MusicTool : Tool
             _andyMusicSystem.PlayLatin();
             GotValidCommand();
         }
-        else if (_voiceInput.ContainsOneOfThesePhrases("Jazz"))
-        {
-            _andyMusicSystem.PlayJazz();
-            GotValidCommand();
-        }
-        else if (_voiceInput.ContainsOneOfThesePhrases("Love", "Lovesong"))
+        // else if (_voiceInput.ContainsOneOfThesePhrases("Play A Jazz Song"))
+        // {
+        //     _andyMusicSystem.PlayJazz();
+        //     GotValidCommand();
+        // }
+        else if (_voiceInput.ContainsOneOfThesePhrases("Lovesong", "Love Song"))
         {
             _andyMusicSystem.PlayLove();
             GotValidCommand();
         }
-        else if (_voiceInput.ContainsOneOfThesePhrases("Play", "Start", "Music") && !_andyMusicSystem.isPlaying) //default music case, or pause resume
+        else if (_voiceInput.ContainsOneOfThesePhrases("Play", "Resume") &&
+                 !_andyMusicSystem.isPlaying) //default music case, or pause resume
         {
             if (_andyMusicSystem._masterSong.clip != null)
                 _andyMusicSystem.Play(); // a song is already playing, so resume
@@ -95,7 +103,8 @@ public class MusicTool : Tool
                 _andyMusicSystem.PlayJazz(); // nothing playing yet, so play default song
             GotValidCommand();
         }
-        else if (_voiceInput.ContainsOneOfThesePhrases("Pause", "Stop"))
+        else if (_voiceInput.ContainsOneOfThesePhrases("Pause", "Stop") &&
+                 _andyMusicSystem.isPlaying)
         {
             _andyMusicSystem.Pause();
             GotValidCommand();
@@ -103,7 +112,20 @@ public class MusicTool : Tool
         else if (_voiceInput.ContainsOneOfThesePhrases("Remove", "Delete"))
         {
             if (isDeletable)
+            {
                 Destroy(rootToDeleteIfDeletable);
+                GotValidCommand();
+            }
+        }
+        else if (_voiceInput.ContainsOneOfThesePhrases("Down", "Lower", "Quieter"))
+        {
+            _andyMusicSystem.VolumeDown();
+            GotValidCommand();
+        }
+        else if (_voiceInput.ContainsOneOfThesePhrases("Up", "Raise", "Louder"))
+        {
+            _andyMusicSystem.VolumeUp();
+            GotValidCommand();
         }
         else if (_voiceInput.ContainsOneOfThesePhrases("Set", "Place"))
         {
@@ -128,7 +150,7 @@ public class MusicTool : Tool
             _andyMusicSystem.SetMode(AndyMusicSystem.MusicMode.Stereo);
             GotValidCommand();
         }
-        else if (_voiceInput.ContainsOneOfThesePhrases("Spatial", "World", "Outside"))
+        else if (_voiceInput.ContainsOneOfThesePhrases("Spatial", "World", "Outside") && _andyMusicSystem.HasSpatialEmitters)
         {
             _andyMusicSystem.SetMode(AndyMusicSystem.MusicMode.Spatial);
             GotValidCommand();
@@ -153,10 +175,33 @@ public class MusicTool : Tool
         // _voiceInput.OnStart();
     }
 
+    public override void DeSelect()
+    {
+        if (!_isSelected)
+            return;
+        _timeActiveRemaining = 0; // something else is gazed at -- force interaction timeout for this tool 
+        highlight.SetActive(false);
+        _isSelected = false;
+        _musicToolActiveAndListening.enabled = false;
+    }
+
     private IEnumerator FlashNFade()
     {
-        confirmationFlashOverlay.SetActive(true);
+        try
+        {
+            confirmationFlashOverlay.SetActive(true);
+        }
+        catch
+        {
+        }
+
         yield return new WaitForSeconds(.3f);
-        confirmationFlashOverlay.SetActive(false);
+        try
+        {
+            confirmationFlashOverlay.SetActive(false);
+        }
+        catch
+        {
+        }
     }
 }

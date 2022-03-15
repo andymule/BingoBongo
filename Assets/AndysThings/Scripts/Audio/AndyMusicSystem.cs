@@ -20,9 +20,15 @@ public class AndyMusicSystem : MonoBehaviour
 
     [SerializeField] private AndyMusicStereoEmitter stereoEmitter; // one of these is manually in scene always
     [HideInInspector] public bool isPlaying = false;
+    private float volume = 1.0f; // goes from 0.0 - 1.0, scaled to all recievers
 
     private float _spatialBlend = 0; // we can fade between the two modes with this . 1 is spatial, 0 is stereo
     private readonly float _blendTime = .55f; // how long the crossfade takes b/w spatial and stereo
+
+    public bool HasSpatialEmitters
+    {
+        get { return _allAudioEmitters.Count > 0; }
+    }
 
     public enum MusicMode
     {
@@ -139,6 +145,11 @@ public class AndyMusicSystem : MonoBehaviour
             return;
         }
 
+        for (int i = 0; i < data.Length; i++)
+        {
+            data[i] *= volume;
+        }
+
         GiveDataToChildEmitters(data, _spatialBlend);
         stereoEmitter.InjectAudioData(data, 1 - _spatialBlend);
 
@@ -152,5 +163,17 @@ public class AndyMusicSystem : MonoBehaviour
             if (spatialEmitter.initialialized)
                 spatialEmitter.InjectAudioData(data, level);
         }
+    }
+
+    public void VolumeDown()
+    {
+        volume -= .25f;
+        volume = Mathf.Clamp01(volume);
+    }
+
+    public void VolumeUp()
+    {
+        volume += .25f;
+        volume = Mathf.Clamp01(volume);
     }
 }

@@ -10,7 +10,7 @@ using UnityEngine;
 public class Tool : MonoBehaviour
 {
     [SerializeField] protected GameObject highlight; // highlights while active
-    [SerializeField] protected float timeToStayActiveAfterGaze = 5f; // you can look away and still interact for this amount of time after
+    protected readonly float TimeToStayActiveAfterGaze = 4f; // you can look away and still interact for this amount of time after
     protected float _timeActiveRemaining = 0f; // counts down active time remaining on this tool if not actively gazing
     protected Toolbelt _toolbelt; // main toolbelt in scene
     protected bool _isSelected;
@@ -37,13 +37,14 @@ public class Tool : MonoBehaviour
 
     private void OnDestroy()
     {
+        StopAllCoroutines();
         if (_toolbelt != null)
             _toolbelt.RemoveOldTool(this);
     }
 
     public virtual void Select()
     {
-        _timeActiveRemaining = timeToStayActiveAfterGaze;
+        _timeActiveRemaining = TimeToStayActiveAfterGaze;
         highlight.SetActive(true);
         _isSelected = true;
     }

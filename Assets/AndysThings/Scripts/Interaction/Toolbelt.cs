@@ -28,11 +28,10 @@ public class Toolbelt : MonoBehaviour
     public void SelectTool(GameObject toolToSelect)
     {
         var thisTool = toolToSelect.GetComponent<Tool>();
-        thisTool.Select();
-
         foreach (var tool in toolOnBelt.Where(tool => tool != thisTool))
         {
             tool.DeSelect();
         }
+        thisTool.Select();
     }
 }
